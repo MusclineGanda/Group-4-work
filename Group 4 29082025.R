@@ -5,7 +5,7 @@ library(deSolve)
 library(tidyverse)
 library(plotly)
 
-# Parameters
+# Parameters by gogf
 biting = 0.3
 seeking = 0.1
 infectivity = 0.45
