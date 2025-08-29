@@ -188,6 +188,23 @@ View(out_with_vector_ctrl)
 
 cum_infections_vector <- tail(out_with_vector_ctrl$Ih,1)
 infections_averted_mosq_vec <- cum_infections_baseline - cum_infections_vector
+
+# -----------------------------
+# Plotting cases against baseline
+# -----------------------------
+cases_after365_df <- data.frame(
+  Intervention = c("No Intervention", "After Vector Control"),
+  Cases = c(cum_infections_baseline, cum_infections_vector)
+)
+
+ggplot(cases_after365_df, aes(x=Intervention, y=Cases, fill=Intervention)) +
+  geom_bar(stat="identity") +
+  theme_minimal() +
+  labs(title="Cum_Cases After 365 Days",
+       y="Number of Cum Cases",
+       x="Intervention")
+
+
 ### plotting
 
 subplot(
@@ -276,7 +293,7 @@ sis_sei_treatment <- function(t, state, p){
     dEm <- (beta * (Ihtreated / Nh)* Sm) + (beta * (Ihuntreated / Nh)* Sm)-(l*Em)-(mu_d*Em)
     dIm <-  (l* Em) - mu_d* Im
     
-    newInfections <- alpha * (Im/Nh) * Sh
+    newInfections <- 0.75*(alpha * (Im / Nh)   * Sh) + 0.25*(alpha * (Im / Nh)   * Sh)
     
     list(c(dSh, dIh_treated, dIh_untreated, dSm,dEm, dIm),  aux = c(newInfections = newInfections, Nh, Nm))
   })
@@ -292,6 +309,21 @@ view(out_with_treatment)
 
 cum_infections_treatment <- tail(out_with_treatment$Ihtreated+out_with_treatment$Ihuntreated, 1)
 infections_averted_bytreatment <- cum_infections_baseline - cum_infections_treatment
+
+# -----------------------------
+# Plotting cases against baseline
+# -----------------------------
+cases_after365_df <- data.frame(
+  Intervention = c("No Intervention", "After Treatment Intervention"),
+  Cases = c(cum_infections_baseline, cum_infections_treatment)
+)
+
+ggplot(cases_after365_df, aes(x=Intervention, y=Cases, fill=Intervention)) +
+  geom_bar(stat="identity") +
+  theme_minimal() +
+  labs(title="Cum_Cases After 365 Days",
+       y="Number of Cum Cases",
+       x="Intervention")
 
 
 ### plotting
@@ -330,13 +362,13 @@ cat("Number of cases averted after vector control:",infections_averted_mosq_vec)
 ##   Number of cases averted after vector control: 8877.534   ############
 #Both interventions seem to avert the same number of cases at the end of the epidemic period hence its now about picking the intervention that is less costly, vector control cost USD 80 000 and treatment cost (0.75 percentage of the infected with access to treatment*8877.296_number of infected people *15_cost)
 
-Total_cost_of_treatment<- params_treatment$ratio_access_T*infections_averted_bytreatment*15
+Total_cost_of_treatment<- sum(out_with_treatment$aux.newInfections)*0.75*15
 cat("Total cost of treatment intervention:",Total_cost_of_treatment)
 
 #Total cost of treatment intervention: 99869.58
 #we then conclude that vector control is cheaper based on the assumption that treated individuals do not fully recover hence more expensive that USD 80 000 for vector control which has the same number of cases averted
-
-
+sum(out_with_treatment$aux.newInfections)
+view(out_with_treatment)
 # -----------------------------
 # Compare and plot cases averted
 # -----------------------------
