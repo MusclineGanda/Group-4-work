@@ -1,5 +1,5 @@
 ##############################
-## SIS–SEI vector–host model ##
+## SIS–SEI vector–host modelling ##
 ##############################
 library(deSolve)
 library(tidyverse)
